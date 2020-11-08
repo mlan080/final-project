@@ -12,7 +12,13 @@ import (
 func Server() {
 	db := database.New()
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/airports", airportsGet).Methods("GET")
+	//router.HandleFunc("/airports", airportsGet).Methods("GET")
+	router.HandleFunc("/airporcts", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
+			airportsGet(db, w, r)
+		}
+	})
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
@@ -44,7 +50,7 @@ func Server() {
 // }
 
 //endpoints
-func airportsGet(db *Database, w http.ResponseWriter, r *http.Request) {
+func airportsGet(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	//db.GetAirport()
 	fmt.Println("gello")
 }
