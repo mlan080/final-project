@@ -1,6 +1,12 @@
 package main
 
-import "github.com/fromatob/engineering/training/backend/6/server"
+type Airport struct {
+	IATA      string  `json:"iata"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Name      string  `json:"name"`
+	Type      string  `json:"type"`
+}
 
 func main() {
 	server.Server()
