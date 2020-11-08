@@ -1,0 +1,134 @@
+openapi: 3.0.1
+
+info:
+  title: Airports
+  description: A simple server to manage airports data.
+  version: 1.0.0
+
+paths:
+  /airports:
+    post:
+      summary: Add a new airport
+      requestBody:
+        description: Airport object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Airport'
+        required: true
+      responses:
+        201:
+          description: Airport added
+          content: {}
+        400:
+          description: Invalid airport object
+          content: {}
+        409:
+          description: Airport already exists
+          content: {}
+
+    get:
+      summary: Get all airports
+      parameters:
+        - name: minLat
+          in: query
+          description: Minimum latitude of airports
+          required: false
+          schema:
+            type: number
+        - name: maxLat
+          in: query
+          description: Maximum latitude of airports
+          required: false
+          schema:
+            type: number
+        - name: minLon
+          in: query
+          description: Minimum longitude of airports
+          required: false
+          schema:
+            type: number
+        - name: maxLon
+          in: query
+          description: Maximum longitude of airports
+          required: false
+          schema:
+            type: number
+      responses:
+        200:
+          description: Airports returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Airport'
+        400:
+          description: Invalid query parameters
+          content: {}
+
+  /airports/{iataCode}:
+    get:
+      summary: Find airport by IATA code
+      parameters:
+        - name: iataCode
+          in: path
+          description: IATA code of the airport
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Airport returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airport'
+        400:
+          description: Invalid IATA code
+          content: {}
+        404:
+          description: Airport not found
+          content: {}
+
+    delete:
+      summary: Delete airport by IATA code
+      parameters:
+        - name: iataCode
+          in: path
+          description: IATA code of the airport
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Airport deleted
+          content: {}
+        400:
+          description: Invalid IATA code
+          content: {}
+        404:
+          description: Airport not found
+          content: {}
+
+  /healthz:
+    get:
+      summary: Health check
+      responses:
+        204:
+          description: Server is running
+          content: {}
+
+components:
+  schemas:
+    Airport:
+      type: object
+      properties:
+        name:
+          type: string
+        iataCode:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
