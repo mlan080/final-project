@@ -1,22 +1,29 @@
 package database
 
-type Database struct {
-	GetAirport(iata string) Airport  
-	DeleteAirport(iata string) Airport
-	airportsData map[string]Airport
-	//handler is validation 
+type Airport struct {
+	IATA      string  `json:"iata"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Name      string  `json:"name"`
+	Type      string  `json:"type"`
 }
-//called from main
- func New() *Database {
-// 	return &Database
-// }
 
+type Database struct {
+	airportsData map[string]Airport
+	//handler is validation
+}
+
+//called from main or airport
+func New() *Database {
+	var db Database
+	return &db
+}
 
 //convert my csv
 //
 
 // // GetAirport fetches an Airport given an IATA code - how does this help my rest api?
-func (db *Database) GetAirport(iata string) Airport {
+func (db *Database) GetAirport(iata string) *Airport {
 	airportsData := make(map[string]Airport)
 
 	data, ok := airportsData[iata]

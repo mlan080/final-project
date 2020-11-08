@@ -6,34 +6,36 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/mlan080/final-project/internal/database"
 )
 
 func Server() {
+	db := database.New()
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/airports", airportsGet).Methods("GET")
-	// router.HandleFunc("/airports/{IATA}", getOneAirport).Methods("GET")
-	// router.HandleFunc("/airports/{IATA}", deleteAirport).Methods("DELETE")
-	// router.HandleFunc("/airports", airportsPost).Methods("POST")
-	//	router.HandleFunc("/healthcheck", healthcheck)
-
-	// http.HandleFunc("/airports", func(w http.ResponseWriter, req *http.Request) {
-	// 	switch req.Method {
-	// 	case "GET":
-	// 		airportsGet(w, req)
-	// 	case "DELETE":
-	// 		airportsIataCodeDelete(w, req)
-	// 	case "GET":
-	// 		airportsIataCodeGet(w, req)
-	// 	case "POST":
-	// 		airportsPost(w, req)
-	// 	case "GET":
-	// 		healthzGet(w, req)
-	// 	default:
-	// 		http.Error(w, "allowed methods for /airports: POST", http.StatusMethodNotAllowed)
-	// 	}
 	log.Fatal(http.ListenAndServe(":8080", router))
-
 }
+
+// router.HandleFunc("/airports/{IATA}", getOneAirport).Methods("GET")
+// router.HandleFunc("/airports/{IATA}", deleteAirport).Methods("DELETE")
+// router.HandleFunc("/airports", airportsPost).Methods("POST")
+//	router.HandleFunc("/healthcheck", healthcheck)
+
+// http.HandleFunc("/airports", func(w http.ResponseWriter, req *http.Request) {
+// 	switch req.Method {
+// 	case "GET":
+// 		airportsGet(w, req)
+// 	case "DELETE":
+// 		airportsIataCodeDelete(w, req)
+// 	case "GET":
+// 		airportsIataCodeGet(w, req)
+// 	case "POST":
+// 		airportsPost(w, req)
+// 	case "GET":
+// 		healthzGet(w, req)
+// 	default:
+// 		http.Error(w, "allowed methods for /airports: POST", http.StatusMethodNotAllowed)
+// 	}
 
 // func Err(err error) {
 // 	if err != nil {
@@ -43,6 +45,7 @@ func Server() {
 
 //endpoints
 func airportsGet(db *Database, w http.ResponseWriter, r *http.Request) {
+	//db.GetAirport()
 	fmt.Println("gello")
 }
 

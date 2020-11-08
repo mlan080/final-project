@@ -1,12 +1,6 @@
 package airports
 
-type Airport struct {
-	IATA      string  `json:"iata"`
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
-	Name      string  `json:"name"`
-	Type      string  `json:"type"`
-}
+import "github.com/mlan080/final-project/internal/database/database"
 
 csvfile, err := os.Open("airport-data.csv")
 Err(err)
