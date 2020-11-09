@@ -6,6 +6,7 @@ import (
 
 func main() {
 	server.Server()
+	airports.ParseCSV(){
 }
 
 // set up HTTP handlers

@@ -2,6 +2,7 @@ package airports
 
 import "github.com/mlan080/final-project/internal/database/database"
 
+func ParseCSV(){
 csvfile, err := os.Open("airport-data.csv")
 Err(err)
 // defer func() {
@@ -15,6 +16,7 @@ records := csv.NewReader(csvfile)
 _, err = records.Read() //skip header
 Err(err)
 
+var airports []*airport
 airportsMap := make(map[string]bool)
 
 for {

@@ -1,7 +1,7 @@
 package server
 
 import (
-	"fmt"
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -13,7 +13,7 @@ func Server() {
 	db := database.New()
 	router := mux.NewRouter().StrictSlash(true)
 	//router.HandleFunc("/airports", airportsGet).Methods("GET")
-	router.HandleFunc("/airporcts", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/airports", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			airportsGet(db, w, r)
@@ -21,11 +21,6 @@ func Server() {
 	})
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
-
-// router.HandleFunc("/airports/{IATA}", getOneAirport).Methods("GET")
-// router.HandleFunc("/airports/{IATA}", deleteAirport).Methods("DELETE")
-// router.HandleFunc("/airports", airportsPost).Methods("POST")
-//	router.HandleFunc("/healthcheck", healthcheck)
 
 // http.HandleFunc("/airports", func(w http.ResponseWriter, req *http.Request) {
 // 	switch req.Method {
@@ -51,8 +46,10 @@ func Server() {
 
 //endpoints
 func airportsGet(db *database.Database, w http.ResponseWriter, r *http.Request) {
-	//db.GetAirport()
-	fmt.Println("gello")
+	//fmt.Print(db.GetAirport("POM"))
+	airports := db.GetAirport("")
+	json.NewEncoder(w).Encode(airports)
+	// 	//GetAirport(iataCode)
 }
 
 //q := r.URL.Query().Get("q")
@@ -103,21 +100,7 @@ func airportsGet(db *database.Database, w http.ResponseWriter, r *http.Request) 
 // func getOneAirport(w http.ResponseWriter, r *http.Request) {
 
 // 	//The names are used to create a map of route variables which can be retrieved calling mux.Vars()
-// 	iataCode := mux.Vars(r)["iataCode"]
-
-// 	for _, oneAirport := range airports {
-// 		if oneAirport.IATA == iataCode {
-// 			json.NewEncoder(w).Encode(oneAirport)
-// 			continue
-// 		}
-
-// 		if strings.HasPrefix(strings.ToLower(oneAirport.IATA), strings.ToLower(iataCode)) {
-// 			airports = append(airports, oneAirport)
-// 			continue
-// 		}
-// 	}
-// 	json.NewEncoder(w).Encode(airports)
-// 	//GetAirport(iataCode) //how do I get it to print a response for iatacode pom?
+//how do I get it to print a response for iatacode pom?
 // }
 
 // func deleteAirport(w http.ResponseWriter, r *http.Request) {

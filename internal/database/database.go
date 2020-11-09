@@ -1,5 +1,10 @@
 package database
 
+import (
+	"encoding/json"
+	"strings"
+)
+
 type Airport struct {
 	IATA      string  `json:"iata"`
 	Latitude  float64 `json:"latitude"`
@@ -20,15 +25,26 @@ func New() *Database {
 }
 
 //convert my csv
-//
 
 // // GetAirport fetches an Airport given an IATA code - how does this help my rest api?
 func (db *Database) GetAirport(iata string) *Airport {
 	airportsData := make(map[string]Airport)
+	//iataCode := mux.Vars(r)["iataCode"]
 
-	data, ok := airportsData[iata]
-	if !ok {
-		return nil
+	for _, airport := range airportsData {
+		if airport.IATA == iataCode {
+			json.NewEncoder(w).Encode(airport)
+			continue
+		}
+
+		if strings.HasPrefix(strings.ToLower(airport.IATA), strings.ToLower(iataCode)) {
+			airports = append(airports, airport)
+			continue
+		}
 	}
-	return (&data)
+	// data, ok := airportsData[iata]
+	// if !ok {
+	// 	return nil
+	// }
+	// return &data
 }
