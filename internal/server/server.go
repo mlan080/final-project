@@ -1,7 +1,7 @@
 package server
 
 import (
-	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -9,8 +9,7 @@ import (
 	"github.com/mlan080/final-project/internal/database"
 )
 
-func Server() {
-	db := database.New()
+func Server(db *database.Database) {
 	router := mux.NewRouter().StrictSlash(true)
 	//router.HandleFunc("/airports", airportsGet).Methods("GET")
 	router.HandleFunc("/airports", func(w http.ResponseWriter, r *http.Request) {
@@ -38,18 +37,16 @@ func Server() {
 // 		http.Error(w, "allowed methods for /airports: POST", http.StatusMethodNotAllowed)
 // 	}
 
-// func Err(err error) {
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
 // }
 
 //endpoints
 func airportsGet(db *database.Database, w http.ResponseWriter, r *http.Request) {
-	//fmt.Print(db.GetAirport("POM"))
-	airports := db.GetAirport("")
-	json.NewEncoder(w).Encode(airports)
+	//json.NewEncoder(w).Encode(airports)
+	fmt.Println(db.GetAirport("POM"))
+	//fmt.Println("hello")
 	// 	//GetAirport(iataCode)
+	//q := r.URL.Query().Get("q")
+
 }
 
 //q := r.URL.Query().Get("q")

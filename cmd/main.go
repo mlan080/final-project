@@ -1,12 +1,16 @@
 package main
 
 import (
+	"github.com/mlan080/final-project/internal/airports"
+	"github.com/mlan080/final-project/internal/database"
 	"github.com/mlan080/final-project/internal/server"
 )
 
 func main() {
-	server.Server()
-	airports.ParseCSV(){
+	db := database.New()
+	//needs to run first or will get an empty datastore
+	airports.ParseCSV(db)
+	server.Server(db)
 }
 
 // set up HTTP handlers

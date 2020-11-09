@@ -1,11 +1,6 @@
 package database
 
-import (
-	"encoding/json"
-	"strings"
-)
-
-type Airport struct {
+type DBAirport struct {
 	IATA      string  `json:"iata"`
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
@@ -14,7 +9,7 @@ type Airport struct {
 }
 
 type Database struct {
-	airportsData map[string]Airport
+	AirportsData map[string]DBAirport
 	//handler is validation
 }
 
@@ -27,24 +22,24 @@ func New() *Database {
 //convert my csv
 
 // // GetAirport fetches an Airport given an IATA code - how does this help my rest api?
-func (db *Database) GetAirport(iata string) *Airport {
-	airportsData := make(map[string]Airport)
-	//iataCode := mux.Vars(r)["iataCode"]
+func (db *Database) GetAirport(iata string) DBAirport {
+	return db.AirportsData[iata] //returns the airport struct
 
-	for _, airport := range airportsData {
-		if airport.IATA == iataCode {
-			json.NewEncoder(w).Encode(airport)
-			continue
-		}
-
-		if strings.HasPrefix(strings.ToLower(airport.IATA), strings.ToLower(iataCode)) {
-			airports = append(airports, airport)
-			continue
-		}
-	}
-	// data, ok := airportsData[iata]
 	// if !ok {
 	// 	return nil
 	// }
-	// return &data
+
 }
+
+//iataCode := mux.Vars(r)["iataCode"]
+
+// for _, airport := range airportsData {
+// 	if airport.IATA == iataCode {
+// 		json.NewEncoder(w).Encode(airport)
+// 		continue
+// 	}
+
+// 	if strings.HasPrefix(strings.ToLower(airport.IATA), strings.ToLower(iataCode)) {
+// 		airports = append(airports, airport)
+// 		continue
+// 	}
