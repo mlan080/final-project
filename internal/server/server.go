@@ -1,9 +1,10 @@
 package server
 
 import (
-	"fmt"
+	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/mlan080/final-project/internal/database"
@@ -12,41 +13,33 @@ import (
 func Server(db *database.Database) {
 	router := mux.NewRouter().StrictSlash(true)
 	//router.HandleFunc("/airports", airportsGet).Methods("GET")
-	router.HandleFunc("/airports", func(w http.ResponseWriter, r *http.Request) {
+	//router.HandleFunc("/airports/", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/airports/{iataCode}", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			airportsGet(db, w, r)
 		}
+		// 	case "DELETE":
+		// 		airportsIataCodeDelete(w, req)
+		// 	case "GET":
+		// 		airportsIataCodeGet(w, req)
+		// 	case "POST":
+		// 		airportsPost(w, req)
+		// 	case "GET":
+		// 		healthzGet(w, req)
+		// 	default:
+		// 		http.Error(w, "allowed methods for /airports: POST", http.StatusMethodNotAllowed)
+		// 	}
 	})
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
-// http.HandleFunc("/airports", func(w http.ResponseWriter, req *http.Request) {
-// 	switch req.Method {
-// 	case "GET":
-// 		airportsGet(w, req)
-// 	case "DELETE":
-// 		airportsIataCodeDelete(w, req)
-// 	case "GET":
-// 		airportsIataCodeGet(w, req)
-// 	case "POST":
-// 		airportsPost(w, req)
-// 	case "GET":
-// 		healthzGet(w, req)
-// 	default:
-// 		http.Error(w, "allowed methods for /airports: POST", http.StatusMethodNotAllowed)
-// 	}
-
-// }
-
 //endpoints
 func airportsGet(db *database.Database, w http.ResponseWriter, r *http.Request) {
-	//json.NewEncoder(w).Encode(airports)
-	fmt.Println(db.GetAirport("POM"))
-	//fmt.Println("hello")
-	// 	//GetAirport(iataCode)
-	//q := r.URL.Query().Get("q")
-
+	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	iataCode := strings.ToUpper(vars["iataCode"])
+	json.NewEncoder(w).Encode(db.GetAirport(iataCode))
 }
 
 //q := r.URL.Query().Get("q")
@@ -139,3 +132,13 @@ func airportsGet(db *database.Database, w http.ResponseWriter, r *http.Request) 
 // 		"project6", checkers.Heartbeat("/6"),
 // 	)
 // }
+
+// for _, airport := range db.AirportsData {
+// 	if strings.HasPrefix(strings.ToLower(airport.IATA), strings.ToLower(iataCode)) {
+// 		db.AirportsData = append(db.AirportsData, airport)
+// 		continue
+// 	}
+
+// 	if airport.IATA == iataCode {
+// 		//json.NewEncoder(w).Encode(airport)
+// 		fmt.Println(airport)

@@ -77,9 +77,7 @@ func ParseCSV(db *database.Database) {
 			log.Printf("skipping, %s is not the correct type", iata)
 			continue
 		}
-		//airports = append(airports, &airport{Name: name, IATA: iata, Latitude: latitude, Longitude: longitude, Type: typ})
 		airportsData[iata] = database.DBAirport{Name: name, IATA: iata, Latitude: latitude, Longitude: longitude, Type: typ}
-		//	fmt.Println(airports)
 	}
 	//populate the datastore - fill up empty db
 	db.AirportsData = airportsData

@@ -13,33 +13,12 @@ type Database struct {
 	//handler is validation
 }
 
-//called from main or airport
 func New() *Database {
 	var db Database
 	return &db
 }
 
-//convert my csv
-
-// // GetAirport fetches an Airport given an IATA code - how does this help my rest api?
+//Fetches an Airport given an IATA code
 func (db *Database) GetAirport(iata string) DBAirport {
-	return db.AirportsData[iata] //returns the airport struct
-
-	// if !ok {
-	// 	return nil
-	// }
-
+	return db.AirportsData[iata]
 }
-
-//iataCode := mux.Vars(r)["iataCode"]
-
-// for _, airport := range airportsData {
-// 	if airport.IATA == iataCode {
-// 		json.NewEncoder(w).Encode(airport)
-// 		continue
-// 	}
-
-// 	if strings.HasPrefix(strings.ToLower(airport.IATA), strings.ToLower(iataCode)) {
-// 		airports = append(airports, airport)
-// 		continue
-// 	}
