@@ -11,56 +11,41 @@ import (
 	"github.com/mlan080/final-project/internal/database"
 )
 
-type airport struct {
-	IATA      string
-	Latitude  float64
-	Longitude float64
-	Name      string
-	Type      string
-}
-
 func ParseCSV(db *database.Database) {
-	//Rf - split into openCsv and loadCSv
 	csvfile, err := os.Open("airport-data.csv")
 	Err(err)
-	// defer func() {
-	// 	printOnErr(csvfile.Close())
-	// }()
 	defer csvfile.Close()
 
-	// Read File into a Variable
 	records := csv.NewReader(csvfile)
 	_, err = records.Read()
 	Err(err)
 
-	//var airports []*airport
-	//airportsMap := make(map[string]bool)
 	airportsData := make(map[string]database.DBAirport)
 	for {
 		record, err := records.Read()
 		if err == io.EOF {
 			break
 		}
-		//Err(err)
+		Err(err)
 
 		iata, lat, lon, name, typ := record[13], record[4], record[5], record[3], record[2]
 
 		if len(iata) != 3 {
 			if iata != "" && iata != "0" && iata != "-" {
-				log.Printf("skipping, wrong IATA %s", iata)
+				//log.Printf("skipping, wrong IATA %s", iata)
 			}
 			continue
 		}
 
 		if name == "" {
-			log.Printf("skipping, %s dosen't have name", iata)
+			//log.Printf("skipping, %s dosen't have name", iata)
 		}
 
 		name = strings.ReplaceAll(name, `"`, `\"`)
-		if _, ok := airportsData[iata]; ok {
-			log.Printf("skipping %s, duplicated", iata)
-			continue
-		}
+		// if _, ok := airportsData[iata]; ok {
+		// 	log.Printf("skipping %s, duplicated", iata)
+		//	continue
+		//}
 
 		latitude, err := strconv.ParseFloat(lat, 64)
 		if err != nil {
@@ -72,7 +57,6 @@ func ParseCSV(db *database.Database) {
 			log.Println(err)
 			continue
 		}
-		//how to make this not print in terminal?
 		if typ != "large_airport" {
 			log.Printf("skipping, %s is not the correct type", iata)
 			continue
@@ -80,7 +64,7 @@ func ParseCSV(db *database.Database) {
 		airportsData[iata] = database.DBAirport{Name: name, IATA: iata, Latitude: latitude, Longitude: longitude, Type: typ}
 	}
 	//populate the datastore - fill up empty db
-	db.AirportsData = airportsData
+	airportsData = airportsData
 }
 
 func Err(err error) {
