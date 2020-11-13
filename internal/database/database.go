@@ -22,3 +22,8 @@ func New() *Database {
 func (db *Database) GetAirport(iata string) DBAirport {
 	return db.AirportsData[iata]
 }
+
+//Fetches all airports
+func (db *Database) GetAllAirports() map[string]DBAirport {
+	return db.AirportsData
+}

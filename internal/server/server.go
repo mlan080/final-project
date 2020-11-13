@@ -17,7 +17,7 @@ func Server(db *database.Database) {
 
 	router.HandleFunc("/airports", func(w http.ResponseWriter, r *http.Request) {
 		airportsGetall(db, w, r)
-	}).Methods("GET").Queries("maxLat", "{[0-9]*?}")
+	}).Methods("GET").Queries("q", "{[a-z]*?}")
 
 	router.HandleFunc("/airports/{iataCode}", func(w http.ResponseWriter, r *http.Request) {
 		airportsIataCodeGet(db, w, r)
@@ -40,18 +40,28 @@ func Server(db *database.Database) {
 
 //endpoints
 func airportsGetall(db *database.Database, w http.ResponseWriter, r *http.Request) {
-	//db = database.New()
-	//q := r.URL.Query().Get("q")
-	// if q != "" {
-	// 	airportsGetQueries(db, w, r)
-	// }
+	q := r.URL.Query().Get("q")
+	if q == "maxlat" {
+		tempLat := 0.0
+		tempAirport := ""
+		for airport := range db.GetAllAirports() {
+			json.NewEncoder(w).Encode(db.GetAirport(airport))
+			if tempLat < airport.Latitude {
+				tempLat = airport.Latitude
+				tempAirport = airport.iata
+			}
+		}
+	} else {
+		json.NewEncoder(w).Encode(db.AirportsData)
+	}
+
 	json.NewEncoder(w).Encode(db.AirportsData)
 }
 
 //convert map into an array and response
 func airportsGetQueries(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	// 	// 	w.Header().Set("Content-Type", "application/json")
-	// 	q := r.URL.Query().Get("q")
+	q := r.URL.Query().Get("q")
 
 	// 	// 	//convert map to slice
 	// 	// response := struct {
@@ -63,22 +73,21 @@ func airportsGetQueries(db *database.Database, w http.ResponseWriter, r *http.Re
 	// 	airports := []float64{}
 	// 	airportsData := make(map[string]database.DBAirport)
 
-	// 	if q == "maxLat" {
-	// 		tempLat := 0.0
-	// 		tempAirport := ""
-
-	// 		for airport := range db.AirportsData {
-	// 			if tempLat < dblatitude {
-	// 				tempLat = append(airport.Latitude
-	// 				fmt.Println(tempLat)
-
-	// 				pairs := [][]string{}
-	// 				for key, value := range m {
-	// 					pairs = append(pairs, []string{key, value})
-	// 				}
-	// 			}
-	// 		}
-	// 	}
+	if q == "maxlat" {
+		//	tempLat := 0.0
+		//tempAirport := ""
+		for airport := range db.GetAllAirports() {
+			json.NewEncoder(w).Encode((airport))
+			// if tempLat < airport.Latitude {
+			// 	tempLat = airport.Latitude
+			// 	fmt.Println(tempLat)
+			// 	// 				pairs := [][]string{}
+			// 	// 				for key, value := range m {
+			// 	// 					pairs = append(pairs, []string{key, value})
+			// 	// 				}
+			// }
+		}
+	}
 }
 
 func airportsIataCodeGet(db *database.Database, w http.ResponseWriter, r *http.Request) {
