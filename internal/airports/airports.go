@@ -11,6 +11,14 @@ import (
 	"github.com/mlan080/final-project/internal/database"
 )
 
+type airport struct {
+	IATA      string
+	Latitude  float64
+	Longitude float64
+	Name      string
+	Type      string
+}
+
 func ParseCSV(db *database.Database) {
 	csvfile, err := os.Open("airport-data.csv")
 	Err(err)
@@ -32,20 +40,20 @@ func ParseCSV(db *database.Database) {
 
 		if len(iata) != 3 {
 			if iata != "" && iata != "0" && iata != "-" {
-				//log.Printf("skipping, wrong IATA %s", iata)
+				log.Printf("skipping, wrong IATA %s", iata)
 			}
 			continue
 		}
 
 		if name == "" {
-			//log.Printf("skipping, %s dosen't have name", iata)
+			log.Printf("skipping, %s dosen't have name", iata)
 		}
 
 		name = strings.ReplaceAll(name, `"`, `\"`)
-		// if _, ok := airportsData[iata]; ok {
-		// 	log.Printf("skipping %s, duplicated", iata)
-		//	continue
-		//}
+		if _, ok := airportsData[iata]; ok {
+			log.Printf("skipping %s, duplicated", iata)
+			continue
+		}
 
 		latitude, err := strconv.ParseFloat(lat, 64)
 		if err != nil {
@@ -64,7 +72,7 @@ func ParseCSV(db *database.Database) {
 		airportsData[iata] = database.DBAirport{Name: name, IATA: iata, Latitude: latitude, Longitude: longitude, Type: typ}
 	}
 	//populate the datastore - fill up empty db
-	airportsData = airportsData
+	db.AirportsData = airportsData
 }
 
 func Err(err error) {

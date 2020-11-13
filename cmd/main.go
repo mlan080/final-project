@@ -7,8 +7,8 @@ import (
 )
 
 func main() {
-	db := database.New()
 	//needs to run first or will get an empty datastore
+	db := database.New()
 	airports.ParseCSV(db)
 	server.Server(db)
 }
