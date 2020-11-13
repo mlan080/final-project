@@ -40,22 +40,34 @@ func Server(db *database.Database) {
 
 //endpoints
 func airportsGetall(db *database.Database, w http.ResponseWriter, r *http.Request) {
+
 	q := r.URL.Query().Get("q")
+
 	if q == "maxlat" {
 		tempLat := 0.0
-		tempAirport := ""
-		for airport := range db.GetAllAirports() {
-			json.NewEncoder(w).Encode(db.GetAirport(airport))
-			if tempLat < airport.Latitude {
-				tempLat = airport.Latitude
-				tempAirport = airport.iata
+		tempAirportIata := ""
+		for _, airport := range db.GetAllAirports() {
+			airportFull := db.GetAirport(airport.IATA)
+			if tempLat < airportFull.Latitude {
+				tempLat = airportFull.Latitude
+				tempAirportIata = airportFull.IATA
 			}
 		}
-	} else {
-		json.NewEncoder(w).Encode(db.AirportsData)
+		json.NewEncoder(w).Encode(db.GetAirport(tempAirportIata))
+	} else if q == "minlat" {
+		tempLat := -1000.0
+		tempAirportIata := ""
+		for _, airport := range db.GetAllAirports() {
+			airportFull := db.GetAirport(airport.IATA)
+			if tempLat > airportFull.Latitude {
+				tempLat = airportFull.Latitude
+				tempAirportIata = airportFull.IATA
+			}
+		}
+		json.NewEncoder(w).Encode(db.GetAirport(tempAirportIata))
 	}
 
-	json.NewEncoder(w).Encode(db.AirportsData)
+	// json.NewEncoder(w).Encode(db.AirportsData)
 }
 
 //convert map into an array and response
