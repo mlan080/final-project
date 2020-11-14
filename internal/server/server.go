@@ -47,27 +47,46 @@ func airportsGetall(db *database.Database, w http.ResponseWriter, r *http.Reques
 		tempLat := 0.0
 		tempAirportIata := ""
 		for _, airport := range db.GetAllAirports() {
-			airportFull := db.GetAirport(airport.IATA)
-			if tempLat < airportFull.Latitude {
-				tempLat = airportFull.Latitude
-				tempAirportIata = airportFull.IATA
+			//airportFull := db.GetAirport(airport.IATA)
+			if tempLat < airport.Latitude {
+				tempLat = airport.Latitude
+				tempAirportIata = airport.IATA
 			}
 		}
 		json.NewEncoder(w).Encode(db.GetAirport(tempAirportIata))
 	} else if q == "minlat" {
-		tempLat := -1000.0
+		tempLat := 1000.0
 		tempAirportIata := ""
 		for _, airport := range db.GetAllAirports() {
-			airportFull := db.GetAirport(airport.IATA)
-			if tempLat > airportFull.Latitude {
-				tempLat = airportFull.Latitude
-				tempAirportIata = airportFull.IATA
+			if tempLat > airport.Latitude {
+				tempLat = airport.Latitude
+				tempAirportIata = airport.IATA
 			}
 		}
 		json.NewEncoder(w).Encode(db.GetAirport(tempAirportIata))
+	} else if q == "maxlon" {
+		tempLon := -100.0
+		tempAirportIata := ""
+		for _, airport := range db.GetAllAirports() {
+			if tempLon < airport.Longitude {
+				tempLon = airport.Longitude
+				tempAirportIata = airport.IATA
+			}
+		}
+		json.NewEncoder(w).Encode(db.GetAirport(tempAirportIata))
+	} else if q == "minlon" {
+		tempLon := 1000.0
+		tempAirportIata := ""
+		for _, airport := range db.GetAllAirports() {
+			if tempLon > airport.Longitude {
+				tempLon = airport.Longitude
+				tempAirportIata = airport.IATA
+			}
+		}
+		json.NewEncoder(w).Encode(db.GetAirport(tempAirportIata))
+	} else {
+		json.NewEncoder(w).Encode(db.GetAllAirports())
 	}
-
-	// json.NewEncoder(w).Encode(db.AirportsData)
 }
 
 //convert map into an array and response
