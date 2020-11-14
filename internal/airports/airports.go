@@ -2,6 +2,7 @@ package airports
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -11,16 +12,8 @@ import (
 	"github.com/mlan080/final-project/internal/database"
 )
 
-type airport struct {
-	IATA      string
-	Latitude  float64
-	Longitude float64
-	Name      string
-	Type      string
-}
-
 func ParseCSV(db *database.Database) {
-	csvfile, err := os.Open("airport-data.csv")
+	csvfile, err := os.Open("cmd/airport-data.csv")
 	Err(err)
 	defer csvfile.Close()
 
@@ -37,41 +30,35 @@ func ParseCSV(db *database.Database) {
 		Err(err)
 
 		iata, lat, lon, name, typ := record[13], record[4], record[5], record[3], record[2]
-
 		if len(iata) != 3 {
 			if iata != "" && iata != "0" && iata != "-" {
-				log.Printf("skipping, wrong IATA %s", iata)
+				fmt.Errorf("skipping, wrong IATA %s", iata)
 			}
 			continue
 		}
-
 		if name == "" {
-			log.Printf("skipping, %s dosen't have name", iata)
-		}
-
-		name = strings.ReplaceAll(name, `"`, `\"`)
-		if _, ok := airportsData[iata]; ok {
-			log.Printf("skipping %s, duplicated", iata)
+			fmt.Errorf("skipping, %s dosen't have name", iata)
 			continue
 		}
-
+		name = strings.ReplaceAll(name, `"`, `\"`)
+		if _, ok := airportsData[iata]; ok {
+			fmt.Errorf("skipping %s, duplicated", iata)
+			continue
+		}
 		latitude, err := strconv.ParseFloat(lat, 64)
 		if err != nil {
-			log.Println(err)
 			continue
 		}
 		longitude, err := strconv.ParseFloat(lon, 64)
 		if err != nil {
-			log.Println(err)
 			continue
 		}
-		if typ != "large_airport" {
-			log.Printf("skipping, %s is not the correct type", iata)
+		if typ == "large_airport" {
+			fmt.Errorf("skipping, %s is not the correct type", iata)
 			continue
 		}
 		airportsData[iata] = database.DBAirport{Name: name, IATA: iata, Latitude: latitude, Longitude: longitude, Type: typ}
 	}
-	//populate the datastore - fill up empty db
 	db.AirportsData = airportsData
 }
 

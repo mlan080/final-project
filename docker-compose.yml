@@ -1,0 +1,12 @@
+version: '3.5'
+
+services:
+  airports-service:
+    image: airports-service
+    build:
+      context: .
+    ports:
+      - 8080:8080
+    environment:
+      - PORT=8080
+ 
