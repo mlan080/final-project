@@ -27,3 +27,7 @@ func (db *Database) GetAirport(iata string) DBAirport {
 func (db *Database) GetAllAirports() map[string]DBAirport {
 	return db.AirportsData
 }
+
+func (db *Database) AddAirport(newAirport DBAirport) {
+	db.AirportsData[newAirport.IATA] = newAirport
+}

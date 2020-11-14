@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -17,7 +17,7 @@ func Server(db *database.Database) {
 
 	router.HandleFunc("/airports", func(w http.ResponseWriter, r *http.Request) {
 		airportsGetall(db, w, r)
-	}).Methods("GET").Queries("q", "{[a-z]*?}")
+	}).Methods("GET")
 
 	router.HandleFunc("/airports/{iataCode}", func(w http.ResponseWriter, r *http.Request) {
 		airportsIataCodeGet(db, w, r)
@@ -28,32 +28,31 @@ func Server(db *database.Database) {
 	}).Methods("DELETE")
 
 	router.HandleFunc("/airports", func(w http.ResponseWriter, r *http.Request) {
-		airportsPost(w, r)
+		airportsPost(db, w, r)
 	}).Methods("POST")
 
-	router.HandleFunc("/airports", func(w http.ResponseWriter, r *http.Request) {
-		healthzGet()
+	router.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		healthzGet(w, r)
 	}).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
 //endpoints
-func airportsGetall(db *database.Database, w http.ResponseWriter, r *http.Request) {
-
+func airportsGetall(db *database.Database, w http.ResponseWriter, r *http.Request) bool {
 	q := r.URL.Query().Get("q")
 
 	if q == "maxlat" {
 		tempLat := 0.0
 		tempAirportIata := ""
 		for _, airport := range db.GetAllAirports() {
-			//airportFull := db.GetAirport(airport.IATA)
 			if tempLat < airport.Latitude {
 				tempLat = airport.Latitude
 				tempAirportIata = airport.IATA
 			}
 		}
 		json.NewEncoder(w).Encode(db.GetAirport(tempAirportIata))
+		return true
 	} else if q == "minlat" {
 		tempLat := 1000.0
 		tempAirportIata := ""
@@ -64,6 +63,7 @@ func airportsGetall(db *database.Database, w http.ResponseWriter, r *http.Reques
 			}
 		}
 		json.NewEncoder(w).Encode(db.GetAirport(tempAirportIata))
+		return true
 	} else if q == "maxlon" {
 		tempLon := -100.0
 		tempAirportIata := ""
@@ -74,6 +74,7 @@ func airportsGetall(db *database.Database, w http.ResponseWriter, r *http.Reques
 			}
 		}
 		json.NewEncoder(w).Encode(db.GetAirport(tempAirportIata))
+		return true
 	} else if q == "minlon" {
 		tempLon := 1000.0
 		tempAirportIata := ""
@@ -84,83 +85,64 @@ func airportsGetall(db *database.Database, w http.ResponseWriter, r *http.Reques
 			}
 		}
 		json.NewEncoder(w).Encode(db.GetAirport(tempAirportIata))
-	} else {
-		json.NewEncoder(w).Encode(db.GetAllAirports())
+		return true
 	}
-}
-
-//convert map into an array and response
-func airportsGetQueries(db *database.Database, w http.ResponseWriter, r *http.Request) {
-	// 	// 	w.Header().Set("Content-Type", "application/json")
-	q := r.URL.Query().Get("q")
-
-	// 	// 	//convert map to slice
-	// 	// response := struct {
-	// 	// 	Latitude float64 `json:"latitude"`
-	// 	// }{
-	// 	// 	Latitude: database.DBAirport.float64(Latitude),
-	// 	// }
-	// 	//convert map to slice
-	// 	airports := []float64{}
-	// 	airportsData := make(map[string]database.DBAirport)
-
-	if q == "maxlat" {
-		//	tempLat := 0.0
-		//tempAirport := ""
-		for airport := range db.GetAllAirports() {
-			json.NewEncoder(w).Encode((airport))
-			// if tempLat < airport.Latitude {
-			// 	tempLat = airport.Latitude
-			// 	fmt.Println(tempLat)
-			// 	// 				pairs := [][]string{}
-			// 	// 				for key, value := range m {
-			// 	// 					pairs = append(pairs, []string{key, value})
-			// 	// 				}
-			// }
-		}
-	}
+	json.NewEncoder(w).Encode(db.GetAllAirports())
+	return true
 }
 
 func airportsIataCodeGet(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	iataCode := strings.ToUpper(vars["iataCode"])
+	if len(iataCode) != 3 {
+		log.Printf("Invalid IATA code for GET airportsIataCodeGet", iataCode)
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	// for _, airport := range db.GetAllAirports() {
+	// 	if iataCode != db.DBAirport.IATA {
+	//log.Printf("Airport not found for GET airportsIataCodeGet", iataCode)
+	// 	w.WriteHeader(http.StatusPageNotFound)
+	//}
+
 	json.NewEncoder(w).Encode(db.GetAirport(iataCode))
 }
-
-//json.NewEncoder(w).Encode(db.AirportsData)
 
 func airportsIataCodeDelete(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	iataCode := strings.ToUpper(vars["iataCode"])
-	airporttodelete := db.GetAirport(iataCode)
-	fmt.Println(airporttodelete)
+	delete(db.GetAllAirports(), iataCode)
 }
 
-//in built delete function for maps -
-
-func airportsPost(w http.ResponseWriter, r *http.Request) {
-	// 	data, err := ioutil.ReadAll(r.Body)
-	// 	if err != nil {
-	// 		log.Printf("error reading request body: %v", err)
-	// 		return
-	// 	}
-
-	// 	var airport Airport
-	// 	err = json.Unmarshal(data, &airport)
-	// 	if err != nil {
-	// 		log.Printf("error parsing request: %v", err)
-	// 		http.Error(w, "parameter 'q' is required", http.StatusBadRequest)
-	// 		return
-	// 	}
-
-	// 	GetAirport(airport.IATA)
+func airportsPost(db *database.Database, w http.ResponseWriter, r *http.Request) bool {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("error reading request body for POST airportsPost: %v", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return true
+	}
+	var airport database.DBAirport
+	err = json.Unmarshal(data, &airport)
+	if err != nil {
+		log.Printf("error parsing request for POST airportsPost: %v", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return true
+	}
+	if len(airport.IATA) != 3 {
+		log.Printf("Invalid IATA code for POST airportsPost", airport.IATA)
+		w.WriteHeader(http.StatusBadRequest)
+		return true
+	}
+	if _, ok := db.AirportsData[airport.IATA]; ok {
+		log.Printf("IATA code already exists in the db for POST airportsPost", airport.IATA)
+		w.WriteHeader(http.StatusConflict)
+		return true
+	}
+	db.AddAirport(airport)
+	w.WriteHeader(http.StatusCreated)
+	return true
 }
 
-//if ok = checks if the airport already exists
-
-func healthzGet() {
-	// 	healthcheck.WithChecker(
-	// 		"project6", checkers.Heartbeat("/6"),
-	// 	)
+func healthzGet(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }
