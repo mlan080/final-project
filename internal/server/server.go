@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -109,9 +110,31 @@ func airportsIataCodeGet(db *database.Database, w http.ResponseWriter, r *http.R
 }
 
 func airportsIataCodeDelete(db *database.Database, w http.ResponseWriter, r *http.Request) {
+	type airport struct {
+		IATA      string `json:"IATA"`
+		Latitude  string `json:"Latitude"`
+		Longitude string `json:"Longitude"`
+	}
+
+	type allAirports []airport
+
+	var airports = allAirports{
+		{
+			IATA:      "12345", //airport.IATA,
+			Latitude:  "12345", //airport.Latitude,
+			Longitude: "12345", //airport.Longitude,
+		},
+	}
+
 	vars := mux.Vars(r)
 	iataCode := strings.ToUpper(vars["iataCode"])
-	delete(db.GetAllAirports(), iataCode)
+	for i, airport := range airports {
+		if airport.IATA == iataCode {
+			airports = append(airports[:i], airports[i+1:]...)
+			fmt.Fprintf(w, "The event with ID %v has been deleted successfully", iataCode)
+
+		}
+	}
 }
 
 func airportsPost(db *database.Database, w http.ResponseWriter, r *http.Request) bool {

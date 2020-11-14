@@ -18,12 +18,5 @@ func TestData(t *testing.T) {
 		if data.Name == "" {
 			t.Errorf("expected non-empty name for %s", iata)
 		}
-		if data != ParseCSV(iata) {
-			t.Errorf("got different data from GetAirport for %s", iata)
-		}
 	}
-
-	// if a := GetAirport("INVALID"); a != nil {
-	// 	t.Errorf("expected 'INVALID' IATA code to return nil, got a result")
-	// }
 }
